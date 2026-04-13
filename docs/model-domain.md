@@ -29,11 +29,16 @@
 
 ## Initial Implementation Scope
 
+The domain model includes all core entities required by the clinic system.
+However, the first implementation iteration (MVP) focuses on the main appointment workflow and includes full backend support primarily for:
+
 - Patient
 - Specialist
 - Service
 - AvailabilitySlot
 - Appointment
+
+The remaining entities are already included in the domain model and database design to keep the architecture consistent and ready for future expansion, but they may not yet have full CRUD/API support in the first iteration.
 
 ## Entity Definitions 
 
@@ -41,6 +46,8 @@
 - Id (int)
 - LastName (string)
 - FirstName (string)
+- DateOfBirth (DateTime)
+- Gender (enum, optional)
 - Email (string)
 - PhoneNumber (string)
 - Address (string)
@@ -81,7 +88,37 @@
 - ServiceId (int)
 - RoomId (int?)
 - AvailabilitySlotId (int)
-- Form (enum)
+- Form (enum: InOffice, VideoCall, PhoneCall)
 - Status (enum)
 - CreatedAt (DateTime)
 
+### Specialization
+- Id (int)
+- Name (string)
+- Description (string)
+- CreatedAt (DateTime)  
+- IsActive (bool)
+
+### Room
+- Id (int)
+- Name (string)
+- Floor (int)
+- CreatedAt (DateTime)  
+- IsActive (bool)
+
+### AppointmentNote
+- Id (int)
+- AppointmentId (int)
+- Content (string)
+- CreatedAt (DateTime)
+
+### AppointmentRecommendation
+- Id (int)
+- AppointmentId (int)
+- Content (string)
+- CreatedAt (DateTime)
+
+### SpecialistService
+- Id (int)
+- SpecialistId (int)
+- ServiceId (int)

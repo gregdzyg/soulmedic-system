@@ -1,0 +1,15 @@
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: soulmedic-sql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Pass123
+    ports:
+      - "1434:1433"
+    volumes:
+      - soulmedic_sql_data:/var/opt/mssql
+
+volumes:
+  soulmedic_sql_data:
