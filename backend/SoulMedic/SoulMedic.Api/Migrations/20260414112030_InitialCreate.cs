@@ -56,8 +56,6 @@ namespace SoulMedic.Api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -137,7 +135,11 @@ namespace SoulMedic.Api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SpecialistId = table.Column<int>(type: "int", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false)
+                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -147,13 +149,13 @@ namespace SoulMedic.Api.Migrations
                         column: x => x.ServiceId,
                         principalTable: "Services",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_SpecialistServices_Specialists_SpecialistId",
                         column: x => x.SpecialistId,
                         principalTable: "Specialists",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,8 +165,7 @@ namespace SoulMedic.Api.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PatientId = table.Column<int>(type: "int", nullable: false),
-                    SpecialistId = table.Column<int>(type: "int", nullable: false),
-                    ServiceId = table.Column<int>(type: "int", nullable: false),
+                    SpecialistServiceId = table.Column<int>(type: "int", nullable: false),
                     RoomId = table.Column<int>(type: "int", nullable: true),
                     AvailabilitySlotId = table.Column<int>(type: "int", nullable: false),
                     Form = table.Column<int>(type: "int", nullable: false),
@@ -193,15 +194,9 @@ namespace SoulMedic.Api.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Appointments_Services_ServiceId",
-                        column: x => x.ServiceId,
-                        principalTable: "Services",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Appointments_Specialists_SpecialistId",
-                        column: x => x.SpecialistId,
-                        principalTable: "Specialists",
+                        name: "FK_Appointments_SpecialistServices_SpecialistServiceId",
+                        column: x => x.SpecialistServiceId,
+                        principalTable: "SpecialistServices",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -277,14 +272,9 @@ namespace SoulMedic.Api.Migrations
                 column: "RoomId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Appointments_ServiceId",
+                name: "IX_Appointments_SpecialistServiceId",
                 table: "Appointments",
-                column: "ServiceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_SpecialistId",
-                table: "Appointments",
-                column: "SpecialistId");
+                column: "SpecialistServiceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AvailabilitySlots_SpecialistId",
@@ -302,9 +292,10 @@ namespace SoulMedic.Api.Migrations
                 column: "ServiceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SpecialistServices_SpecialistId",
+                name: "IX_SpecialistServices_SpecialistId_ServiceId",
                 table: "SpecialistServices",
-                column: "SpecialistId");
+                columns: new[] { "SpecialistId", "ServiceId" },
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -317,9 +308,6 @@ namespace SoulMedic.Api.Migrations
                 name: "AppointmentRecommendations");
 
             migrationBuilder.DropTable(
-                name: "SpecialistServices");
-
-            migrationBuilder.DropTable(
                 name: "Appointments");
 
             migrationBuilder.DropTable(
@@ -330,6 +318,9 @@ namespace SoulMedic.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Rooms");
+
+            migrationBuilder.DropTable(
+                name: "SpecialistServices");
 
             migrationBuilder.DropTable(
                 name: "Services");

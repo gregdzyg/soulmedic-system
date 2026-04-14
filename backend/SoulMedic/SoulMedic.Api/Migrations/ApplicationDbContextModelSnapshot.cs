@@ -45,10 +45,7 @@ namespace SoulMedic.Api.Migrations
                     b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SpecialistId")
+                    b.Property<int>("SpecialistServiceId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -63,9 +60,7 @@ namespace SoulMedic.Api.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.HasIndex("ServiceId");
-
-                    b.HasIndex("SpecialistId");
+                    b.HasIndex("SpecialistServiceId");
 
                     b.ToTable("Appointments");
                 });
@@ -235,19 +230,12 @@ namespace SoulMedic.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -306,6 +294,19 @@ namespace SoulMedic.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
                     b.Property<int>("ServiceId")
                         .HasColumnType("int");
 
@@ -316,7 +317,8 @@ namespace SoulMedic.Api.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.HasIndex("SpecialistId");
+                    b.HasIndex("SpecialistId", "ServiceId")
+                        .IsUnique();
 
                     b.ToTable("SpecialistServices");
                 });
@@ -367,15 +369,9 @@ namespace SoulMedic.Api.Migrations
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SoulMedic.Api.Domain.Entities.Service", "Service")
+                    b.HasOne("SoulMedic.Api.Domain.Entities.SpecialistService", "SpecialistService")
                         .WithMany("Appointments")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("SoulMedic.Api.Domain.Entities.Specialist", "Specialist")
-                        .WithMany("Appointments")
-                        .HasForeignKey("SpecialistId")
+                        .HasForeignKey("SpecialistServiceId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -385,9 +381,7 @@ namespace SoulMedic.Api.Migrations
 
                     b.Navigation("Room");
 
-                    b.Navigation("Service");
-
-                    b.Navigation("Specialist");
+                    b.Navigation("SpecialistService");
                 });
 
             modelBuilder.Entity("SoulMedic.Api.Domain.Entities.AppointmentNote", b =>
@@ -439,13 +433,13 @@ namespace SoulMedic.Api.Migrations
                     b.HasOne("SoulMedic.Api.Domain.Entities.Service", "Service")
                         .WithMany("SpecialistServices")
                         .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SoulMedic.Api.Domain.Entities.Specialist", "Specialist")
                         .WithMany("SpecialistServices")
                         .HasForeignKey("SpecialistId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Service");
@@ -477,18 +471,19 @@ namespace SoulMedic.Api.Migrations
 
             modelBuilder.Entity("SoulMedic.Api.Domain.Entities.Service", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("SpecialistServices");
                 });
 
             modelBuilder.Entity("SoulMedic.Api.Domain.Entities.Specialist", b =>
                 {
-                    b.Navigation("Appointments");
-
                     b.Navigation("AvailabilitySlots");
 
                     b.Navigation("SpecialistServices");
+                });
+
+            modelBuilder.Entity("SoulMedic.Api.Domain.Entities.SpecialistService", b =>
+                {
+                    b.Navigation("Appointments");
                 });
 
             modelBuilder.Entity("SoulMedic.Api.Domain.Entities.Specialization", b =>

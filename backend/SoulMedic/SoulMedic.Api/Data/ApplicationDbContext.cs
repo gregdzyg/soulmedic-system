@@ -33,15 +33,9 @@ namespace SoulMedic.Api.Data
             .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Specialist)
-            .WithMany(s => s.Appointments)
-            .HasForeignKey(a => a.SpecialistId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-            modelBuilder.Entity<Appointment>()
-            .HasOne(a => a.Service)
-            .WithMany(s => s.Appointments)
-            .HasForeignKey(a => a.ServiceId)
+            .HasOne(a => a.SpecialistService)
+            .WithMany(ss => ss.Appointments)
+            .HasForeignKey(a => a.SpecialistServiceId)
             .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AvailabilitySlot>()
@@ -71,12 +65,14 @@ namespace SoulMedic.Api.Data
             modelBuilder.Entity<SpecialistService>()
             .HasOne(ss => ss.Specialist)
             .WithMany(specialist => specialist.SpecialistServices)
-            .HasForeignKey(ss => ss.SpecialistId);
+            .HasForeignKey(ss => ss.SpecialistId)
+            .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<SpecialistService>()
              .HasOne(ss => ss.Service)
              .WithMany(service => service.SpecialistServices)
-             .HasForeignKey(ss => ss.ServiceId);
+             .HasForeignKey(ss => ss.ServiceId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<AppointmentNote>()
             .HasOne(n => n.Appointment)
@@ -90,9 +86,13 @@ namespace SoulMedic.Api.Data
             .HasForeignKey<AppointmentRecommendation>(r => r.AppointmentId)
             .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Service>()
-            .Property(s => s.Price)
+            modelBuilder.Entity<SpecialistService>()
+            .Property(ss => ss.Price)
             .HasPrecision(10, 2);
+
+            modelBuilder.Entity<SpecialistService>()
+            .HasIndex(ss => new { ss.SpecialistId, ss.ServiceId })
+            .IsUnique();
         }
     }
 }

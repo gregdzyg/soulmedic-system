@@ -15,7 +15,6 @@
         public Specialization Specialization { get; set; } = null!;
 
         public ICollection<AvailabilitySlot> AvailabilitySlots { get; set; } = new List<AvailabilitySlot>();
-        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<SpecialistService> SpecialistServices { get; set; } = new List<SpecialistService>();
     }
 }
