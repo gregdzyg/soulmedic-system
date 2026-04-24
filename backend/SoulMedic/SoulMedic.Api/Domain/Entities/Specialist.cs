@@ -9,6 +9,7 @@
         public string PhoneNumber { get; set; } = null!;
         public int SpecializationId { get; set; }
         public string Bio { get; set; } = null!;
+        public string? ProfilePictureUrl { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
 
