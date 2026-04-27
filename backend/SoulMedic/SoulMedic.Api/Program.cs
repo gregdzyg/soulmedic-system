@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using MediatR;
 using SoulMedic.Api.Data;
 using SoulMedic.Api.Providers.Specialists;
+using SoulMedic.Api.Providers.Spercializations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,6 +52,7 @@ void AddServices(WebApplicationBuilder builder)
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     builder.Services.AddScoped<ISpecialistProvider, SpecialistProvider>();
+    builder.Services.AddScoped<ISpecializationProvider, SpecializationProvider>();
 }
 
 void ConfigurePipeline(WebApplication app)

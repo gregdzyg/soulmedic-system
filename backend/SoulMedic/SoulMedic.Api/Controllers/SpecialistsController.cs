@@ -5,7 +5,6 @@ using SoulMedic.Api.Features.Specialists.Commands.DeleteSpecialist;
 using SoulMedic.Api.Features.Specialists.Commands.UpdateSpecialist;
 using SoulMedic.Api.Features.Specialists.Queries.GetSpecialistById;
 using SoulMedic.Api.Features.Specialists.Queries.GetSpecialists;
-using SoulMedic.Api.Providers.Specialists;
 
 namespace SoulMedic.Api.Controllers
 {
@@ -17,17 +16,15 @@ namespace SoulMedic.Api.Controllers
     public class SpecialistsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ISpecialistProvider _specialistProvider;
 
         /// <summary>
         /// Konstruktor kontrolera specjalistów.
         /// </summary>
         /// <param name="mediator">Mediator do wysyłania zapytań/komend.</param>
-        /// <param name="specialistProvider">Provider do pobierania danych specjalistów.</param>
-        public SpecialistsController(IMediator mediator, ISpecialistProvider specialistProvider)
+        public SpecialistsController(IMediator mediator)
         {
             _mediator = mediator;
-            _specialistProvider = specialistProvider;
+           
         }
 
         /// <summary>
@@ -41,6 +38,9 @@ namespace SoulMedic.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Pobierz szczegóły specjalisty po identyfikatorze.
+        /// </summary>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetSpecialistById(int id)
         {
@@ -52,6 +52,9 @@ namespace SoulMedic.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Utwórz nowego specjalistę.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> CreateSpecialist([FromBody] CreateSpecialistCommand command)
         {
@@ -59,15 +62,20 @@ namespace SoulMedic.Api.Controllers
             return CreatedAtAction(nameof(GetSpecialistById), new { id = newId }, newId);
         }
 
+        /// <summary>
+        /// Zaktualizuj istniejącego specjalistę.
+        /// </summary>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> UpdateSpecialist(int id, [FromBody] UpdateSpecialistCommand command)
         {
-            
             command.Id = id;
             await _mediator.Send(command);
             return NoContent();
         }
 
+        /// <summary>
+        /// Usuń specjalistę.
+        /// </summary>
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteSpecialist(int id)
         {
